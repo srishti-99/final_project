@@ -3,8 +3,11 @@
 ## To run RRT: 
 
 Terminal 1: roscore 
+
 Terminal 2: rosrun rviz rviz 
+
 Terminal 3: rosrun rrt scripts/assignment.py 
+
 Terminal 4: rostopic echo path_points 
 
 This will display the RRT as its running and the path_points topic which its publishing to. 
