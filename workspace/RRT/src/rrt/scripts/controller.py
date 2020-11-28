@@ -30,6 +30,9 @@ def controller(message):
   pub = rospy.Publisher('robot0/cmd_vel', Twist, queue_size=10)
   tfBuffer = tf2_ros.Buffer()
   tfListener = tf2_ros.TransformListener(tfBuffer)
+
+  robot_frame = 'robot_0'
+  fixed_frame = 'map'
   
 
   # Create a timer object that will sleep long enough to result in
@@ -49,7 +52,16 @@ def controller(message):
     # Loop until the node is killed with Ctrl-C 
     while not reached:
 
-      current_pose = #how to find robots current pose
+      trans = tfBuffer.lookup_transform(robot_frame, fixed_frame, rospy.Time())
+      
+      current_pose = Pose()
+      current_point = Point()
+      current_point.x = trans.transform.translation.x
+      current_point.y = trans.transform.translation.y
+      current_point.z = trans.transform.translation.z
+
+      current_pose.position = current_point
+      current_pose.orientation = trans.transform.rotation
 
       try:
         # Process trans to get your state error
@@ -57,6 +69,7 @@ def controller(message):
         relative_pose = target_pose - current_pose
 
         x_dot = np.sqrt((relative_pose.position.x)**2 + (relative_pose.position.y)**2)
+
         if x_dot < epsilon_error:
           reached = True
           break
