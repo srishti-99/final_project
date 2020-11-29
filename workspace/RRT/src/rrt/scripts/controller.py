@@ -27,14 +27,11 @@ def controller(message):
   #Create a publisher and a tf buffer, which is primed with a tf listener
   #TODO: replace 'INPUT TOPIC' with the correct name for the ROS topic on which
   # the robot accepts velocity inputs.
-  pub = rospy.Publisher('robot0/cmd_vel', Twist, queue_size=10)
+  pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=10)
   tfBuffer = tf2_ros.Buffer()
   tfListener = tf2_ros.TransformListener(tfBuffer)
 
-  robot_frame = 'robot_0'
-  fixed_frame = 'map'
   
-
   # Create a timer object that will sleep long enough to result in
   # a 10Hz publishing rate
   r = rospy.Rate(10) # 10hz
@@ -46,13 +43,15 @@ def controller(message):
 
   poses = message.poses
   for i in range(len(poses)):
-    target_pose = pose[i]
+    target_pose = poses[i]
     reached = False
 
     # Loop until the node is killed with Ctrl-C 
-    while not reached:
-
-      trans = tfBuffer.lookup_transform(robot_frame, fixed_frame, rospy.Time())
+    while not reached: 
+      robot_frame = '/odom' #TODO this needs to be a TF frame. I can't figure out how to create a TF frame and attach it to the gazebo turtlebot
+      fixed_frame = 'map' #TODO this is currently the marker.header.frame_id from assignment.py. 
+  
+      trans = tfBuffer.lookup_transform(robot_frame, fixed_frame, rospy.Time()) 
       
       current_pose = Pose()
       current_point = Point()
@@ -62,6 +61,11 @@ def controller(message):
 
       current_pose.position = current_point
       current_pose.orientation = trans.transform.rotation
+
+      ###Another way to get current_pose MIGHT be to suscribe to the /odom topic. 
+      ###I'm not sure how to subscribe to two topics. Maybe ^^ can be recieved at the 
+      ###start of the while loop? 
+      ###is it possible to just like "get" from a topic at an instance and then continue? idk..
 
       try:
         # Process trans to get your state error
@@ -120,6 +124,7 @@ def listener():
     #Whenever a new message is received, the method callback() will be called
     #with the received message as its first argument.
     rospy.Subscriber("path_points", PoseArray, controller)
+
 
 
     #Wait for messages to arrive on the subscribed topics, and exit the node

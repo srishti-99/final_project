@@ -278,7 +278,7 @@ def run_ros():
     path_points_pub = rospy.Publisher('path_points', PoseArray, queue_size=10)
 
     # Each second, ros "spins" and draws 20 frames
-    loop_rate = rospy.Rate(20)  # 20hz
+    loop_rate = rospy.Rate(20)  # 20
 
     frame_count = 0
 
