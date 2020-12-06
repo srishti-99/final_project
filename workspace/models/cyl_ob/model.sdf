@@ -5,7 +5,7 @@
 
 			<pose frame=''>1 -1 1 0 -0 0</pose>
 
-			<interial>
+			<inertial>
 				<mass>1.0</mass>
 				<inertia>
 					<ixx>1</ixx>
@@ -15,7 +15,7 @@
 					<iyz>0</iyz>
 					<izz>1</izz>
 				</inertia>
-			</interial>
+			</inertial>
 
 			<self_collide>0</self_collide>
 
