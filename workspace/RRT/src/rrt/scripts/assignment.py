@@ -24,7 +24,7 @@ def create_obstacles():
 	obst4 = Marker()
 	obst5 = Marker()
 
-	obst1.type = obst1.CYLINDER
+	obst1.type = obst1.SPHERE
 	obst2.type = obst2.CUBE
 	obst3.type = obst3.CUBE
 	obst4.type = obst4.CUBE
@@ -264,13 +264,17 @@ def collides_line(point_i, point_e, line):
 def collides_object(point_i, point_e, lines):
 	for line in lines:
 		if collides_line(point_i, point_e, line):
-			return True
-	return False
+			mid_point = Point()
+			mid_point.x = (line[1].x + line[0].x)/2
+			mid_point.y = (line[1].y + line[0].y)/2
+			mid_point.z = 0
+			return (True, mid_point)
+	return (False, None)
 
 def choose_next_point(target):
 	next_point = Point()
-	target_x = target.pose.position.x
-	target_y = target.pose.position.y
+	target_x = target.x
+	target_y = target.y
 	next_point.x = random.gauss(target_x, target_x/2)
 	while not (next_point.x < BOARD_CORNERS[1] and next_point.x > BOARD_CORNERS[0]):
 		next_point.x = random.gauss(target_x, target_x/2)
@@ -334,6 +338,12 @@ def run_ros():
 
 	path_points = []
 
+	obstacle_collision_count = 0
+
+	change_normal_distribution = False
+
+	annoying_obstacle_point = None
+
 	while not rospy.is_shutdown():
 		msg = "Frame index: %s" % frame_count
 
@@ -358,8 +368,17 @@ def run_ros():
 
 		path_edges.header.stamp = rospy.Time.now()
 
-		if frame_count % HZ == 0 and not found_path: #enters this if statements every 5 counts
-			rand_pnt = choose_next_point(target)
+		if frame_count % HZ == 0 and not found_path:
+
+			rand_pnt = None
+			if change_normal_distribution:
+				rand_pnt = choose_next_point(annoying_obstacle_pnt)
+				change_normal_distribution = False
+			else:
+				rand_pnt = choose_next_point(target.pose.position)
+
+			#enters this if statements every 5 counts
+			# rand_pnt = choose_next_point(target)
 			#rand_pnt = Point()
 			#rand_pnt.x = random.uniform(BOARD_CORNERS[0], BOARD_CORNERS[1])
 			#rand_pnt.y = random.uniform(BOARD_CORNERS[3], BOARD_CORNERS[2])
@@ -378,9 +397,17 @@ def run_ros():
 			new_pnt.y = (1 - dist_ratio) * close_pnt.y + dist_ratio * rand_pnt.y
 			new_pnt.z = 0
 
-			if collides_object(close_pnt, new_pnt, obstacles_lines):
+			does_collide, collision_point = collides_object(close_pnt, new_pnt, obstacles_lines)
+			if does_collide:
 				collision_edges.points.append(close_pnt)
 				collision_edges.points.append(new_pnt)
+				obstacle_collision_count += 1
+
+				if obstacle_collision_count == 2:
+					change_normal_distribution = True
+					obstacle_collision_count = 0
+					annoying_obstacle_pnt = collision_point
+
 			else:
 				# Try to find straight path by comparing the distance between new_pnt and all parents
 				new_check_pnt_cost = 1 + close_node.cost_to_parent
@@ -390,7 +417,7 @@ def run_ros():
 				while check_node != None:
 					cost = math.sqrt(math.pow(check_node.point.x - new_pnt.x, 2) + math.pow(check_node.point.y - new_pnt.y, 2))
 					if cost <= new_check_pnt_cost:
-						if not collides_object(check_node.point, new_pnt, obstacles_lines):
+						if not collides_object(check_node.point, new_pnt, obstacles_lines)[0]:
 							potential_cost = cost
 							potential_parent = check_node
 							new_check_pnt_cost = cost
@@ -406,7 +433,7 @@ def run_ros():
 				tree_edges.points.append(close_node.point)
 				tree_edges.points.append(new_pnt)
 
-			if collides_object(close_node.point, new_pnt, target_lines):
+			if collides_object(close_node.point, new_pnt, target_lines)[0]:
 				found_path = True
 
 		if found_path and not drawed_path:
