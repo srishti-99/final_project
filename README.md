@@ -10,7 +10,14 @@ Terminal 3: rosrun rrt scripts/assignment.py
 
 Terminal 4: rostopic echo path_points 
 
+Terminal 5: roslaunch turtlebot_gazebo turtlebot_world.launch world_file:=$(rospack find lab4_starter)/worlds/room.world
+
+Terminal 6: rosrun rrt scripts/controller.py 
+
 This will display the RRT as its running and the path_points topic which its publishing to. 
+The controller will subscribe to path_points and then run a turtlebot with the name "robot_0". We need to figure out how to spawn this turtlebot. I think the terminal 5 command should work? 
+
+Also in rviz make sure the global frame is "map", add a Marker with topic "visualization_marker", add a TF for "robot_0".
 
 ## File structure and description: 
 
