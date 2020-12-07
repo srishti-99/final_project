@@ -1,8 +1,8 @@
-# Install script for directory: /home/srishtiagarwal/final_project/workspace/RRT/src/rrt
+# Install script for directory: /home/riddhibagadiaa/final_project/workspace/RRT/src/rrt
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/srishtiagarwal/final_project/workspace/RRT/install")
+  set(CMAKE_INSTALL_PREFIX "/home/riddhibagadiaa/final_project/workspace/RRT/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/srishtiagarwal/final_project/workspace/RRT/build/rrt/catkin_generated/installspace/rrt.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/riddhibagadiaa/final_project/workspace/RRT/build/rrt/catkin_generated/installspace/rrt.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rrt/cmake" TYPE FILE FILES
-    "/home/srishtiagarwal/final_project/workspace/RRT/build/rrt/catkin_generated/installspace/rrtConfig.cmake"
-    "/home/srishtiagarwal/final_project/workspace/RRT/build/rrt/catkin_generated/installspace/rrtConfig-version.cmake"
+    "/home/riddhibagadiaa/final_project/workspace/RRT/build/rrt/catkin_generated/installspace/rrtConfig.cmake"
+    "/home/riddhibagadiaa/final_project/workspace/RRT/build/rrt/catkin_generated/installspace/rrtConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rrt" TYPE FILE FILES "/home/srishtiagarwal/final_project/workspace/RRT/src/rrt/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rrt" TYPE FILE FILES "/home/riddhibagadiaa/final_project/workspace/RRT/src/rrt/package.xml")
 endif()
 
