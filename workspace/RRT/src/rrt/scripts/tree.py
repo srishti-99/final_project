@@ -4,16 +4,20 @@ MAX = 20
 
 class TreeNode:
 
-    def __init__(self, point, parent=None):
+    def __init__(self, point, cost, parent=None):
         self.children = []
         self.point = point
         self.parent = parent
+        self.cost_to_parent = cost
 
     def is_root(self):
         return not self.parent
 
     def has_any_children(self):
         return True if self.children else False
+
+    def cost():
+        return self.cost_to_parent
 
 class Tree:
 
@@ -22,7 +26,8 @@ class Tree:
         self.size = 0
 
     def add_node(self, parent, point):
-        node = TreeNode(point, parent)
+        cost = math.sqrt(math.pow(parent.point.x - point.x, 2) + math.pow(parent.point.y - point.y, 2))
+        node = TreeNode(point, cost, parent)
         parent.children.append(node)
         self.size += 1
         return node
