@@ -7,10 +7,10 @@
 #Import the rospy package. For an import to work, it must be specified
 #in both the package manifest AND the Python file in which it is used.
 import rospy
-import tf2_ros
+import tf
 import sys
 import numpy as np
-from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion
+from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion, Point
 from tf.transformations import quaternion_matrix
 
 #Define the method which contains the main functionality of the node.
@@ -28,8 +28,8 @@ def controller(message):
   #TODO: replace 'INPUT TOPIC' with the correct name for the ROS topic on which
   # the robot accepts velocity inputs.
   pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=10)
-  tfBuffer = tf2_ros.Buffer()
-  tfListener = tf2_ros.TransformListener(tfBuffer)
+  #tfBuffer = tf.Buffer()
+  tfListener = tf.TransformListener()
 
   
   # Create a timer object that will sleep long enough to result in
@@ -48,19 +48,21 @@ def controller(message):
 
     # Loop until the node is killed with Ctrl-C 
     while not reached: 
-      robot_frame = '/odom' #TODO this needs to be a TF frame. I can't figure out how to create a TF frame and attach it to the gazebo turtlebot
-      fixed_frame = 'map' #TODO this is currently the marker.header.frame_id from assignment.py. 
+      robot_frame = '/base_link' #TODO this needs to be a TF frame. I can't figure out how to create a TF frame and attach it to the gazebo turtlebot
+      fixed_frame = '/map' #TODO this is currently the marker.header.frame_id from assignment.py. 
   
-      trans = tfBuffer.lookup_transform(robot_frame, fixed_frame, rospy.Time()) 
+      tfListener.waitForTransform("/base_link", "/map", rospy.Time(), rospy.Duration(4.0))
+      trans, rot = tfListener.lookupTransform(robot_frame, fixed_frame, rospy.Time()) 
       
       current_pose = Pose()
       current_point = Point()
-      current_point.x = trans.transform.translation.x
-      current_point.y = trans.transform.translation.y
-      current_point.z = trans.transform.translation.z
-
+      current_point.x = trans[0]
+      current_point.y = trans[1]
+      current_point.z = trans[2]
+      print(rot)
+      print(type(rot))
       current_pose.position = current_point
-      current_pose.orientation = trans.transform.rotation
+      w = rot
 
       ###Another way to get current_pose MIGHT be to suscribe to the /odom topic. 
       ###I'm not sure how to subscribe to two topics. Maybe ^^ can be recieved at the 
@@ -70,15 +72,17 @@ def controller(message):
       try:
         # Process trans to get your state error
         # Generate a control command to send to the robot
-        relative_pose = target_pose - current_pose
+        x = target_pose.position.x - current_pose.position.x
+        y = target_pose.position.y - current_pose.position.y
 
-        x_dot = np.sqrt((relative_pose.position.x)**2 + (relative_pose.position.y)**2)
+
+        x_dot = np.sqrt((x)**2 + (y)**2)
 
         if x_dot < epsilon_error:
           reached = True
           break
 
-        theta_dot = relative_pose.orientation.w 
+        theta_dot = target_pose.orientation.w - w[3]
 
         # x_dot = K1 * trans.transform.translation.x
         # theta_dot = K2 * trans.transform.translation.y
@@ -100,7 +104,7 @@ def controller(message):
 
         pub.publish(control_command)
 
-      except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException):
+      except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
         reached = True #move on to next target? 
 
       # Use our rate object to sleep until it is time to publish again
