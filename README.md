@@ -10,7 +10,7 @@ Terminal 3: rosrun rrt scripts/assignment.py
 
 Terminal 4: rostopic echo path_points 
 
-Terminal 5: roslaunch turtlebot_gazebo turtlebot_world.launch world_file:=worlds/robsWorld.world
+Terminal 5: roslaunch starter turtlebot_world.launch world_file:=$(rospack find starter)/worlds/robsWorld.world
 
 Terminal 6: rosrun rrt scripts/controller.py 
 
