@@ -10,7 +10,9 @@ Terminal 3: rosrun rrt scripts/assignment.py
 
 Terminal 4: rostopic echo path_points 
 
-Terminal 5: roslaunch starter turtlebot_world.launch world_file:=$(rospack find starter)/worlds/robsWorld.world
+Terminal 5: export ROBOT_INITIAL_POSE="-x -4 -y 4 -Y 0"  (this makes the turtlebot start at that initial position, where -Y stands for yaw)
+In the SAME terminal, run:
+roslaunch starter turtlebot_world.launch world_file:=$(rospack find starter)/worlds/robsWorld.world
 
 Terminal 6: rosrun rrt scripts/controller.py 
 
