@@ -1,2 +1,2 @@
-RRT/src/rrt
+RRT/src/rrt:starter
 -DCATKIN_DEVEL_PREFIX=/home/sunaypoole/ros_workspaces/finalproj/workspace/devel -DCMAKE_INSTALL_PREFIX=/home/sunaypoole/ros_workspaces/finalproj/workspace/install -G Unix Makefiles

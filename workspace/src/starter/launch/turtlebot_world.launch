@@ -24,7 +24,7 @@
     <param name="publish_frequency" type="double" value="30.0" />
   </node>
 
-  <node pkg="tf" type="static_transform_publisher" name="map" args="1 0 0 0 0 0 1 map odom 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="map" args="$(optenv RVIZ_INITIAL_POS) 0 0 0 1 map odom 100"/>
 
   <!-- Fake laser -->
   <node pkg="nodelet" type="nodelet" name="laserscan_nodelet_manager" args="manager"/>

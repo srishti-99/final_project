@@ -437,6 +437,24 @@ clean: RRT/src/rrt/CMakeFiles/_catkin_empty_exported_target.dir/clean
 .PHONY : clean
 
 #=============================================================================
+# Directory level rules for directory starter
+
+# Convenience name for "all" pass in the directory.
+starter/all:
+
+.PHONY : starter/all
+
+# Convenience name for "clean" pass in the directory.
+starter/clean:
+
+.PHONY : starter/clean
+
+# Convenience name for "preinstall" pass in the directory.
+starter/preinstall:
+
+.PHONY : starter/preinstall
+
+#=============================================================================
 # Special targets to cleanup operation of make.
 
 # Special rule to run CMake to check the build system integrity.

@@ -36,3 +36,10 @@
 /home/sunaypoole/ros_workspaces/finalproj/workspace/build/RRT/src/rrt/CMakeFiles/install/local.dir
 /home/sunaypoole/ros_workspaces/finalproj/workspace/build/RRT/src/rrt/CMakeFiles/install/strip.dir
 /home/sunaypoole/ros_workspaces/finalproj/workspace/build/RRT/src/rrt/CMakeFiles/test.dir
+/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/CMakeFiles/list_install_components.dir
+/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/CMakeFiles/install.dir
+/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/CMakeFiles/rebuild_cache.dir
+/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/CMakeFiles/install/strip.dir
+/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/CMakeFiles/install/local.dir
+/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/CMakeFiles/test.dir
+/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/CMakeFiles/edit_cache.dir
