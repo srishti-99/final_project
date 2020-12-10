@@ -3,12 +3,12 @@ import tf
 import sys
 import numpy as np
 from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion, Point, Vector3
-from rrt.msg import PointArray
+from rrt.msg import PointArray, PointForRRT, Obstacle
 from tf.transformations import quaternion_matrix, euler_from_quaternion
 import math
 
-radius_of_block = 
-radius_of_robot = 
+radius_of_block = #set based on model file 
+radius_of_robot = #set based on model file
 
 #distance of robots origin from blocks origin once it reorients 
 dist_rob_block = radius_of_block + radius_of_robot + 0.1
@@ -62,10 +62,27 @@ def path(message):
 	rospy.wait_for_service("follow_path")
 	controller_runner = rospy.ServiceProxy("follow_path", Point)
 
+
+	rospy.wait_for_service("create_obstacle")
+	controller_runner = rospy.ServiceProxy("create_obstacle", Obstacle)
+	
+	#block object Obstacle msg with buffer 
+	block_obstacle = Obstacle()
+	block_obstacle.is_obj_to_move = 1
+	block_obstacle.pose = Pose()
+	block_obstacle.pose.position = block_pos
+	block_obstacle.pose.orientation = Quaternion((0,0,0,0))
+	block_obstacle.dim.x = 2*radius_of_block
+	block_obstacle.dim.y = 2*radius_of_block
+	block_obstacle.dim.z = 2*radius_of_block
+	block_obs = object_creator(block_obstacle)
+
+
 	# First, generate a path from the block to the target
 	rrt_block_path_find = PointForRRT()
 	rrt_block_path_find.start = block_pos 
 	rrt_block_path_find.target = target_pos
+	rrt_block_path_find.obstacles = []
 
 	block_to_tgt_resp = rrt_runner(rrt_block_path_find)
 	block_to_tgt_pnts = block_to_tgt_resp.points #now we have block's path to the target
@@ -77,6 +94,8 @@ def path(message):
 		rrt_reorient_path_find = PointForRRT()
 		rrt_reorient_path_find.start = robs_pos
 		rrt_reorient_path_find.target = robs_nxt_tgt
+		block_obstacle.pose.position = block_to_tgt_pnts[i] #update this to check for blocks actual position
+		rrt_reorient_path_find.obstacles = [block_obs]
 
 		rob_reorient_resp = rrt_runner(rrt_reorient_path_find)
 		rob_reorient_resp.points.append(robs_nxt_endpnt)

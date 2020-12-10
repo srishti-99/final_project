@@ -19,77 +19,25 @@ STEP = 1.0
 BOARD_CORNERS = [-5, 5, 5, -5]
 
 
-def create_obstacles():
-	obst1 = Marker()
-	obst2 = Marker()
-	obst3 = Marker()
-	obst4 = Marker()
-	obst5 = Marker()
+def create_obstacles(obstacles):
+	obs_list = []
+	for i in range(len(obstacles)):
+		ob = Marker()
+		ob.type = ob.CUBE
+		ob.header.frame_id = "map"
+		ob.ns = "obstacles"
+		ob.id = i
+		ob.action = ob.ADD
+		ob.scale.x, ob.scale.y, ob.scale.z = obstacles[i].dim.x, obstacles[i].dim.y, obstacles[i].dim.z
+		ob.pose = obstacles[i].pose 
+		ob.color.r, ob.color.g, ob.color.b, ob.color.a = 0.95, 0.95, 0.95, 1.0
+		if ob.is_obj_to_move: 
+			ob.color.r, ob.color.g, ob.color.b, ob.color.a = 0.5, 0.5, 0.5, 1.0
+		ob.lifetime = rospy.Duration()
+		ob.frame_locked = True 
+		obs_list.append(ob)
 
-	obst1.type = obst1.SPHERE
-	obst2.type = obst2.CUBE
-	obst3.type = obst3.CUBE
-	obst4.type = obst4.CUBE
-	obst5.type = obst5.CUBE
-
-	obst1.header.frame_id = "map"
-	obst2.header.frame_id = "map"
-	obst3.header.frame_id = "map"
-	obst4.header.frame_id = "map"
-	obst5.header.frame_id = "map"
-
-	obst1.ns = "obstacles"
-	obst2.ns = "obstacles"
-	obst3.ns = "obstacles"
-	obst4.ns = "obstacles"
-	obst5.ns = "obstacles"
-
-	obst1.id = 0
-	obst2.id = 1
-	obst3.id = 2
-	obst4.id = 3
-	obst5.id = 4
-
-	obst1.action = obst1.ADD
-	obst2.action = obst2.ADD
-	obst3.action = obst3.ADD
-	obst4.action = obst4.ADD
-	obst5.action = obst5.ADD
-
-	obst1.scale.x, obst1.scale.y, obst1.scale.z = 1.0, 1.0, 1.0
-	obst2.scale.x, obst2.scale.y, obst2.scale.z = 2.0, 1.0, 1.0
-	obst3.scale.x, obst3.scale.y, obst3.scale.z = 3.0, 1.0, 1.0
-	obst4.scale.x, obst4.scale.y, obst4.scale.z = 3.0, 1.0, 1.0
-	obst5.scale.x, obst5.scale.y, obst5.scale.z = 3.0, 1.0, 1.0
-
-	obst1.pose.position.x, obst1.pose.position.y, obst1.pose.position.z = -3.5, 1.5, 0.5
-	obst2.pose.position.x, obst2.pose.position.y, obst2.pose.position.z = 0, 1.5, 0.5
-	obst3.pose.position.x, obst3.pose.position.y, obst3.pose.position.z = 3.5, 1.5, 0.5
-	obst4.pose.position.x, obst4.pose.position.y, obst4.pose.position.z = -2.0, -1.5, 0.5
-	obst5.pose.position.x, obst5.pose.position.y, obst5.pose.position.z = 2.0, -1.5, 0.5
-
-	obst1.pose.orientation.w = 1.0
-	obst2.pose.orientation.w = 1.0
-	obst3.pose.orientation.w = 1.0
-	obst4.pose.orientation.w = 1.0
-	obst5.pose.orientation.w = 1.0
-
-	obst1.color.r, obst1.color.g, obst1.color.b, obst1.color.a = 0.5, 0.5, 0.5, 1.0
-	obst2.color.r, obst2.color.g, obst2.color.b, obst2.color.a = 0.95, 0.95, 0.95, 1.0
-	obst2.color = obst2.color
-	obst3.color = obst2.color
-	obst4.color = obst2.color
-	obst5.color = obst2.color
-
-	obst1.lifetime = rospy.Duration()
-	obst2.lifetime = rospy.Duration()
-	obst3.lifetime = rospy.Duration()
-	obst4.lifetime = rospy.Duration()
-	obst5.lifetime = rospy.Duration()
-
-	obst1.frame_locked = True 
-
-	return [obst1, obst2, obst3, obst4, obst5]
+	return obs_list
 
 
 def create_robot(pos):
@@ -286,32 +234,22 @@ def choose_next_point(target):
 		next_point.y = random.gauss(target_y, target_y/2)
 
 	next_point.z = 0
-
-	# next_point = Point()
-	# next_point.x = random.uniform(BOARD_CORNERS[0], BOARD_CORNERS[1])
-	# next_point.y = random.uniform(BOARD_CORNERS[3], BOARD_CORNERS[2])
-	# next_point.z = 0
 	return next_point
 
 
 def run_ros(message):
 	rospy.init_node('ros_demo')
-
-
-
-
 	# First param: topic name; second param: type of the message to be published; third param: size of queued messages,
 	# at least 1
 	chatter_pub = rospy.Publisher('some_chatter', String, queue_size=10)
 	marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
-	path_points_pub = rospy.Publisher('path_points', PointArray, queue_size=10)
 
 	# Each second, ros "spins" and draws 20 frames
 	loop_rate = rospy.Rate(20)  # 20
 
 	frame_count = 0
 
-	obstacles = create_obstacles()
+	obstacles = create_obstacles(message.obstacles)
 
 	obstacles_lines = get_obstacles_lines(obstacles)
 
@@ -509,7 +447,6 @@ def run_ros(message):
 
 		loop_rate.sleep()
 		frame_count += 1
-
 
 
 def listener():
