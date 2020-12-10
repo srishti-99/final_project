@@ -13,6 +13,7 @@ import numpy as np
 from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion, Point, Vector3
 from rrt.msg import PointArray
 from tf.transformations import quaternion_matrix, euler_from_quaternion
+from math import atan2
 
 #Define the method which contains the main functionality of the node.
 def controller(message):
@@ -97,7 +98,7 @@ def controller(message):
 
         euclidean_dist = np.sqrt(x_diff**2 + y_diff**2)
 
-        goal_angle = np.arctan(y_diff / x_diff)
+        goal_angle = atan2(y_diff, x_diff) #np.arctan(y_diff / x_diff)
         change_in_angle = -current_euler[2] + goal_angle
 
         print("Goal angle is ", goal_angle)
