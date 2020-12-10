@@ -1,0 +1,8 @@
+prefix=/home/sunaypoole/ros_workspaces/finalproj/workspace/install
+
+Name: rrt
+Description: Description of rrt
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: rospy std_msgs geometry_msgs message_runtime

@@ -1,2 +1,0 @@
-rrt
--DCATKIN_DEVEL_PREFIX=/home/srishtiagarwal/final_project/workspace/RRT/devel -DCMAKE_INSTALL_PREFIX=/home/srishtiagarwal/final_project/workspace/RRT/install -G Unix Makefiles
