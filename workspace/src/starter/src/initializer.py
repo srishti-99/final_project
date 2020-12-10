@@ -14,6 +14,7 @@ import rospkg
 from geometry_msgs.msg import Point, Pose, Quaternion, PoseWithCovarianceStamped, PoseWithCovariance
 from std_msgs.msg import Header
 from gazebo_msgs.srv import SpawnModel, DeleteModel
+from rrt.msg import PointArray
 
 #Loads only the target and block gazebo models (launch file loads robot)
 def load_gazebo_models(blockPose=Pose(position=Point(x=-3.5, y=1.5, z=0)),
@@ -93,6 +94,7 @@ def initializer():
 	#and the /target_init topics
 	blockInitPub = rospy.Publisher('block_init', Point, queue_size=10)
 	targetInitPub = rospy.Publisher('target_init', Point, queue_size=10)
+	AllInitPub = rospy.Publisher('rob_block_target', PointArray, queue_size=10)
 
 	#raw_input takes in a user prompt to initialize positions
 	#for the robot, block, and target, then publish to corresponding topics
@@ -114,7 +116,11 @@ def initializer():
 	targetPosInit.z = 0
 	targetInitPub.publish(targetPosInit)
 
-	#Load target and block gazebo models
+	AllInit = PointArray()
+	AllInit.points = [robPosInit, blockPosInit, targetPosInit]
+	AllInitPub.publish(AllInit)
+
+	#Load target and block gazebo modelstargetPosInit
 	load_gazebo_models()
 
 	# Loop until the node is killed with Ctrl-C

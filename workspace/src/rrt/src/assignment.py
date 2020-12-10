@@ -11,7 +11,7 @@ import random
 import rospy
 import numpy as np 
 
-from rrt.msg import PointArray
+from rrt.msg import PointArray, PointForRRT
 
 HZ = 5
 STEP = 1.0
@@ -92,30 +92,30 @@ def create_obstacles():
 	return [obst1, obst2, obst3, obst4, obst5]
 
 
-def create_robot():
+def create_robot(pos):
 	rob = Marker()
 	rob.type = rob.CUBE
 	rob.header.frame_id = "map"
 	rob.ns = "robot"
 	rob.id = 0
 	rob.action = rob.ADD
-	rob.scale.x, rob.scale.y, rob.scale.z = 0.5, 0.8, 0.5
-	rob.pose.position.x, rob.pose.position.y, rob.pose.position.z = -4.0, 4.0, 0.25
+	rob.scale.x, rob.scale.y, rob.scale.z = 0.5, 0.5, 0.1
+	rob.pose.position.x, rob.pose.position.y, rob.pose.position.z = pos.x, pos.y, pos.z
 	rob.pose.orientation.w = 1.0
 	rob.color.r, rob.color.g, rob.color.b, rob.color.a = 0.45, 0.45, 0.45, 1.0
 	rob.lifetime = rospy.Duration()
 	return rob
 
 
-def create_target():
+def create_target(pos):
 	tgt = Marker()
 	tgt.type = tgt.CUBE
 	tgt.header.frame_id = "map"
 	tgt.ns = "target"
 	tgt.id = 0
 	tgt.action = tgt.ADD
-	tgt.scale.x, tgt.scale.y, tgt.scale.z = 0.8, 0.8, 0.5
-	tgt.pose.position.x, tgt.pose.position.y, tgt.pose.position.z = -2.5, -3.5, 0.25
+	tgt.scale.x, tgt.scale.y, tgt.scale.z = 1, 1, 0.1
+	tgt.pose.position.x, tgt.pose.position.y, tgt.pose.position.z = pos.x, pos.y, pos.z
 	tgt.pose.orientation.w = 1.0
 	tgt.color.r, tgt.color.g, tgt.color.b, tgt.color.a = 1.00, 0.83, 0.45, 1.0
 	tgt.lifetime = rospy.Duration()
@@ -294,8 +294,11 @@ def choose_next_point(target):
 	return next_point
 
 
-def run_ros():
+def run_ros(message):
 	rospy.init_node('ros_demo')
+
+
+
 
 	# First param: topic name; second param: type of the message to be published; third param: size of queued messages,
 	# at least 1
@@ -312,9 +315,9 @@ def run_ros():
 
 	obstacles_lines = get_obstacles_lines(obstacles)
 
-	robot = create_robot()
+	robot = create_robot(message.start) 
 
-	target = create_target()
+	target = create_target(message.target)
 
 	target_lines = get_target_lines(target)
 
@@ -474,8 +477,14 @@ def run_ros():
 			point_array = PointArray()
 			point_array.points = path_points
 			point_array.points.reverse()
-			path_points_pub.publish(point_array)
+			marker_pub.publish(robot)
+			marker_pub.publish(point)
+			marker_pub.publish(tree_edges)
+			marker_pub.publish(collision_edges)
+			marker_pub.publish(path_edges)
+			# path_points_pub.publish(point_array)
 			path_published = True
+			return point_array
 
 		
 		if frame_count % 2 == 0 and drawed_path and not robot_reached:
@@ -491,66 +500,6 @@ def run_ros():
 		marker_pub.publish(collision_edges)
 		marker_pub.publish(path_edges)
 
-
-
-		# TODO: Robot function
-
-		"""
-
-		# From here, we are defining and drawing a simple robot
-
-		rob.type = rob.SPHERE
-		path.type = path.LINE_STRIP
-
-		rob.header.frame_id = "map"
-		path.header.frame_id = "map"
-
-		rob.header.stamp = rospy.Time.now()
-		path.header.stamp = rospy.Time.now()
-
-		rob.ns = "rob"
-		path.ns = "rob"
-
-		rob.id = 0
-		path.id = 1
-
-		rob.action = rob.ADD
-		path.action = path.ADD
-
-		rob.lifetime = rospy.Duration()
-		path.lifetime = rospy.Duration()
-
-		rob.scale.x, rob.scale.y, rob.scale.z = 0.3, 0.3, 0.3
-
-		rob.color.r, rob.color.g, rob.color.b, rob.color.a = 1.0, 0.5, 0.5, 1.0
-
-		# Path line strip is blue
-		path.color.b, path.color.a = 1.0, 1.0
-
-		path.scale.x = 0.02
-		path.pose.orientation.w = 1.0
-
-		num_slice2 = 200 # Divide a circle into segments
-
-		if frame_count % 2 == 0 and len(path.points) <= num_slice2:
-			p = Point()
-
-			angle = slice_index2 * 2 * math.pi / num_slice2
-			slice_index2 += 1
-			p.x = 4 * math.cos(angle) - 0.5 # Some random circular trajectory, with radius 4, and offset (-0.5, 1, .05)
-			p.y = 4 * math.sin(angle) + 1.0
-			p.z = 0.05
-
-			rob.pose.position = p
-			path.points.append(p) # For drawing path, which is line strip type
-
-		marker_pub.publish(rob)
-		marker_pub.publish(path)
-		
-		"""
-
-		# To here, we finished displaying our components
-
 		# Check if there is a subscriber. Here our subscriber will be Rviz
 		while marker_pub.get_num_connections() < 1:
 			if rospy.is_shutdown():
@@ -562,8 +511,17 @@ def run_ros():
 		frame_count += 1
 
 
+
+def listener():
+	#rospy.Subscriber("rrt_start_target", PointForRRT, run_ros)
+	s = rospy.Service("run_rrt", PointForRRT, run_ros)
+	rospy.spin()
+
+
 if __name__ == '__main__':
-	try:
-		run_ros()
-	except rospy.ROSInterruptException:
-		pass
+	# try:
+	# 	run_ros()
+	# except rospy.ROSInterruptException:
+	# 	pass
+	rospy.init_node('rrt_planner', anonymous=True)
+	listener()
