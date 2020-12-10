@@ -187,39 +187,6 @@ def controller(message):
         pub.publish(cmd2)
         r2.sleep()
 
-
-
-      # try:
-      #   # Process trans to get your state error
-      #   # Generate a control command to send to the robot
-      #   x = target_pose.position.x - current_pose.position.x
-      #   y = target_pose.position.y - current_pose.position.y
-
-
-      #   x_dot = np.sqrt((x)**2 + (y)**2)
-
-      #   if x_dot < epsilon_error:
-      #     reached = True
-      #     break
-
-      #   theta_dot = target_pose.orientation.w - w[3]
-
-      #   # x_dot = K1 * trans.transform.translation.x
-      #   # theta_dot = K2 * trans.transform.translation.y
-      #   print("X dot ", x_dot)
-      #   print("Theta dot ", theta_dot)
-
-      #   cmd = Twist()
-
-      #   cmd.linear.x = K1 * x_dot
-      #   cmd.linear.y = 0.0
-      #   cmd.linear.z = 0.0
-      #   cmd.angular.x = 0.0
-      #   cmd.angular.y = 0.0
-      #   cmd.angular.z = 1 #np.arctan(y/x) #y # theta_dot
-
-      #   control_command = cmd
-
       #   #################################### end your code ###############
 
       #   pub.publish(control_command)
@@ -229,7 +196,15 @@ def controller(message):
 
       # # Use our rate object to sleep until it is time to publish again
       # r.sleep()
+  
+  tfListener.waitForTransform(fixed_frame, robot_frame, rospy.Time(), rospy.Duration(4.0))
+  trans, rot = tfListener.lookupTransform(fixed_frame, robot_frame, rospy.Time()) 
+  robot_final_position = Point()
+  robot_final_position.x = trans[0]
+  robot_final_position.y = trans[1]
+  robot_final_position.z = trans[2]
 
+  return robot_final_position
 
 def pose_to_trans(p):
     q = p.pose.orientation
@@ -247,12 +222,7 @@ def listener():
     #use to receive messages of type std_msgs/String from the topic /chatter_talk.
     #Whenever a new message is received, the method callback() will be called
     #with the received message as its first argument.
-    rospy.Subscriber("path_points", PointArray, controller)
-
-
-
-    #Wait for messages to arrive on the subscribed topics, and exit the node
-    #when it is killed with Ctrl+C
+    s = rospy.Service("follow_path", PointArray, controller)
     rospy.spin()
 
       
