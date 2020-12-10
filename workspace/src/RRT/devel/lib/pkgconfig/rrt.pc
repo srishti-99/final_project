@@ -1,8 +1,0 @@
-prefix=/home/srishtiagarwal/final_project/workspace/RRT/devel
-
-Name: rrt
-Description: Description of rrt
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
