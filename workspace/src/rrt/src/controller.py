@@ -28,21 +28,25 @@ def controller(message):
   #Create a publisher and a tf buffer, which is primed with a tf listener
   #TODO: replace 'INPUT TOPIC' with the correct name for the ROS topic on which
   # the robot accepts velocity inputs.
-  pub = rospy.Publisher('cmd_vel_mux/input/teleop', Twist, queue_size=10)
+  pub = rospy.Publisher('teleop_velocity_smoother/raw_cmd_vel', Twist, queue_size=10)
   #tfBuffer = tf.Buffer()
   tfListener = tf.TransformListener()
 
   
   # Create a timer object that will sleep long enough to result in
   # a 10Hz publishing rate
-  freq = 0.5
+  freq = 2
   r = rospy.Rate(freq) # freq hz
+  freq2 = 10
+  r2 = rospy.Rate(freq2)
 
   K1 = 1
   K2 = 1
 
   pos_epsilon_error = 0.5 #set error value
   orientation_epsilon_error = 0.01
+  x_diff_error = 0.05
+  y_diff_error = 0.05
 
   zero_cmd = Twist()
   zero_cmd.linear = Vector3()
@@ -66,107 +70,121 @@ def controller(message):
 
     # Loop until the node is killed with Ctrl-C 
     blah = 0
-    while not reachedOrientation:
-      print("Orientation iteration ", blah)
-      blah += 1
-  
-      tfListener.waitForTransform(fixed_frame, robot_frame, rospy.Time(), rospy.Duration(4.0))
-      trans, rot = tfListener.lookupTransform(fixed_frame, robot_frame, rospy.Time()) 
-      
-      #current_pose = Pose()
-      current_point = Point()
-      current_point.x = trans[0]
-      current_point.y = trans[1]
-      current_point.z = trans[2]
-      print(rot)
-      print(type(rot))
-      #current_pose.position = current_point
-      #current_quaternion = Quaternion()
-      current_quaternion = rot
-      #current_quaternion.x, current_quaternion.y, current_quaternion.z, current_quaternion.w = rot[0], rot[1], rot[2], rot[3]
-      current_euler = euler_from_quaternion(rot)
-
-      # given a point to move to, first orient in the direction of travel (no linear velocity)
-      x_diff = target_point.x - current_point.x
-      y_diff = target_point.y - current_point.y
-
-      goal_angle = np.arctan(y_diff / x_diff)
-      change_in_angle = -current_euler[2] + goal_angle
-
-      print("Goal angle is ", goal_angle)
-      print("Change in angle is ", change_in_angle)
-      print("x_diff is ", x_diff)
-      print("y_diff is ", y_diff)
-      print("Current quaternion is ", current_quaternion)
-      print("Current euler is ", current_euler)
-
-      if np.abs(change_in_angle) < orientation_epsilon_error:
-        reachedOrientation = True
-        print("REACHED ANGLE")
-        pub.publish(zero_cmd)
-        r.sleep()
-        break
-
-      cmd = Twist()
-      cmd.linear = Vector3()
-      cmd.angular = Vector3()
-
-      cmd.linear.x = 0.0
-      cmd.linear.y = 0.0
-      cmd.linear.z = 0.0
-      cmd.angular.x = 0.0
-      cmd.angular.y = 0.0
-      cmd.angular.z = change_in_angle * freq #np.arctan(y/x) #y # theta_dot
-
-      pub.publish(cmd)
-      r.sleep()
-      #pub.publish(cmd)
-      #r.sleep()
-      #pub.publish(cmd)
-      #r.sleep()
-
-      # now, move straight with 0 orientation (no angular velocity)
-    kj = 0
     while not reachedPosition:
+      while not reachedOrientation:
+        print("Orientation iteration ", blah)
+        blah += 1
+    
+        tfListener.waitForTransform(fixed_frame, robot_frame, rospy.Time(), rospy.Duration(4.0))
+        trans, rot = tfListener.lookupTransform(fixed_frame, robot_frame, rospy.Time()) 
+        
+        #current_pose = Pose()
+        current_point = Point()
+        current_point.x = trans[0]
+        current_point.y = trans[1]
+        current_point.z = trans[2]
+        print(rot)
+        print(type(rot))
+        #current_pose.position = current_point
+        #current_quaternion = Quaternion()
+        current_quaternion = rot
+        #current_quaternion.x, current_quaternion.y, current_quaternion.z, current_quaternion.w = rot[0], rot[1], rot[2], rot[3]
+        current_euler = euler_from_quaternion(rot)
 
-      print("Iteration ", kj)
-      kj += 1
+        # given a point to move to, first orient in the direction of travel (no linear velocity)
+        x_diff = target_point.x - current_point.x
+        y_diff = target_point.y - current_point.y
 
-      tfListener.waitForTransform(robot_frame, fixed_frame, rospy.Time(), rospy.Duration(4.0))
-      trans, rot = tfListener.lookupTransform(robot_frame, fixed_frame, rospy.Time()) 
-      
-      #current_pose = Pose()
-      current_point = Point()
-      current_point.x = trans[0]
-      current_point.y = trans[1]
-      current_point.z = trans[2]
+        euclidean_dist = np.sqrt(x_diff**2 + y_diff**2)
 
-      # given a point to move to, first orient in the direction of travel (no linear velocity)
-      x_diff = target_point.x - current_point.x
-      y_diff = target_point.y - current_point.y
+        goal_angle = np.arctan(y_diff / x_diff)
+        change_in_angle = -current_euler[2] + goal_angle
 
-      euclidean_dist = np.sqrt(x_diff**2 + y_diff**2)
+        print("Goal angle is ", goal_angle)
+        print("Change in angle is ", change_in_angle)
+        print("x_diff is ", x_diff)
+        print("y_diff is ", y_diff)
+        print("Current quaternion is ", current_quaternion)
+        print("Current euler is ", current_euler)
 
-      if euclidean_dist < pos_epsilon_error:
-        reachedPosition = True
-        pub.publish(zero_cmd)
-        print("REACHED POSITION")
+        if euclidean_dist < pos_epsilon_error or (np.abs(x_diff) < x_diff_error and np.abs(y_diff) < y_diff_error):
+          reachedPosition = True
+          pub.publish(zero_cmd)
+          print("REACHED POSITION")
+          r2.sleep()
+          break
+
+        if np.abs(change_in_angle) < orientation_epsilon_error:
+          reachedOrientation = True
+          print("REACHED ANGLE")
+          pub.publish(zero_cmd)
+          r.sleep()
+          break
+
+        cmd = Twist()
+        cmd.linear = Vector3()
+        cmd.angular = Vector3()
+
+        cmd.linear.x = 0.0
+        cmd.linear.y = 0.0
+        cmd.linear.z = 0.0
+        cmd.angular.x = 0.0
+        cmd.angular.y = 0.0
+        cmd.angular.z = change_in_angle # * freq * 2 #np.arctan(y/x) #y # theta_dot
+
+        pub.publish(cmd)
         r.sleep()
+        #pub.publish(cmd)
+        #r.sleep()
+        #pub.publish(cmd)
+        #r.sleep()
+
+        # now, move straight with 0 orientation (no angular velocity)
+
+      if reachedPosition:
         break
+      kj = 0
+      reachedOrientation = False
+      while kj < 10:
 
-      cmd2 = Twist()
-      cmd2.linear = Vector3()
-      cmd2.angular = Vector3()
+        print("Iteration ", kj)
+        kj += 1
 
-      cmd2.linear.x = euclidean_dist * 10
-      cmd2.linear.y = 0.0
-      cmd2.linear.z = 0.0
-      cmd2.angular.x = 0.0
-      cmd2.angular.y = 0.0
-      cmd2.angular.z = 0.0
+        tfListener.waitForTransform(robot_frame, fixed_frame, rospy.Time(), rospy.Duration(4.0))
+        trans, rot = tfListener.lookupTransform(robot_frame, fixed_frame, rospy.Time()) 
+        
+        #current_pose = Pose()
+        current_point = Point()
+        current_point.x = trans[0]
+        current_point.y = trans[1]
+        current_point.z = trans[2]
 
-      pub.publish(cmd2)
-      r.sleep()
+        # given a point to move to, first orient in the direction of travel (no linear velocity)
+        x_diff = target_point.x - current_point.x
+        y_diff = target_point.y - current_point.y
+
+        euclidean_dist = np.sqrt(x_diff**2 + y_diff**2)
+
+        if euclidean_dist < pos_epsilon_error or (np.abs(x_diff) < x_diff_error and np.abs(y_diff) < y_diff_error):
+          reachedPosition = True
+          pub.publish(zero_cmd)
+          print("REACHED POSITION")
+          r2.sleep()
+          break
+
+        cmd2 = Twist()
+        cmd2.linear = Vector3()
+        cmd2.angular = Vector3()
+
+        cmd2.linear.x = euclidean_dist
+        cmd2.linear.y = 0.0
+        cmd2.linear.z = 0.0
+        cmd2.angular.x = 0.0
+        cmd2.angular.y = 0.0
+        cmd2.angular.z = 0.0
+
+        pub.publish(cmd2)
+        r2.sleep()
 
 
 
