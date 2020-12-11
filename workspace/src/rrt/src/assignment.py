@@ -12,10 +12,10 @@ import rospy
 import numpy as np 
 
 from rrt.msg import PointArray, Obstacle, PointForRRT
-from rrt.srv import CreateObstacle, FollowPath, RunRRT
+from rrt.srv import CreateObstacle, FollowPath, RunRRT, RunRRTResponse
 
 HZ = 5
-STEP = 1.0
+STEP = 0.1 #1.0
 
 BOARD_CORNERS = [-5, 5, 5, -5]
 
@@ -32,7 +32,7 @@ def create_obstacles(obstacles):
 		ob.scale.x, ob.scale.y, ob.scale.z = obstacles[i].dim.x, obstacles[i].dim.y, obstacles[i].dim.z
 		ob.pose = obstacles[i].pose 
 		ob.color.r, ob.color.g, ob.color.b, ob.color.a = 0.95, 0.95, 0.95, 1.0
-		if ob.is_obj_to_move: 
+		if obstacles[i].is_obj_to_move: 
 			ob.color.r, ob.color.g, ob.color.b, ob.color.a = 0.5, 0.5, 0.5, 1.0
 		ob.lifetime = rospy.Duration()
 		ob.frame_locked = True 
@@ -63,7 +63,7 @@ def create_target(pos):
 	tgt.ns = "target"
 	tgt.id = 0
 	tgt.action = tgt.ADD
-	tgt.scale.x, tgt.scale.y, tgt.scale.z = 1, 1, 0.1
+	tgt.scale.x, tgt.scale.y, tgt.scale.z = 0.2, 0.2, 0.1
 	tgt.pose.position.x, tgt.pose.position.y, tgt.pose.position.z = pos.x, pos.y, pos.z
 	tgt.pose.orientation.w = 1.0
 	tgt.color.r, tgt.color.g, tgt.color.b, tgt.color.a = 1.00, 0.83, 0.45, 1.0
@@ -239,9 +239,10 @@ def choose_next_point(target):
 
 
 def run_ros(message):
-	rospy.init_node('ros_demo')
+	#rospy.init_node('ros_demo')
 	# First param: topic name; second param: type of the message to be published; third param: size of queued messages,
 	# at least 1
+
 	chatter_pub = rospy.Publisher('some_chatter', String, queue_size=10)
 	marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
 
@@ -250,13 +251,13 @@ def run_ros(message):
 
 	frame_count = 0
 
-	obstacles = create_obstacles(message.obstacles)
+	obstacles = create_obstacles(message.input_point.obstacles)
 
 	obstacles_lines = get_obstacles_lines(obstacles)
 
-	robot = create_robot(message.start) 
+	robot = create_robot(message.input_point.start) 
 
-	target = create_target(message.target)
+	target = create_target(message.input_point.target)
 
 	target_lines = get_target_lines(target)
 
@@ -423,7 +424,8 @@ def run_ros(message):
 			marker_pub.publish(path_edges)
 			# path_points_pub.publish(point_array)
 			path_published = True
-			return point_array
+			print("Returning from running RRT")
+			return RunRRTResponse(point_array)
 
 		
 		if frame_count % 2 == 0 and drawed_path and not robot_reached:

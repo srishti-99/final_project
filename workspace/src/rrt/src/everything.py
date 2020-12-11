@@ -31,10 +31,10 @@ def get_next_target(curr_block_pos, next_block_pos):
 	#takes in where the block needs to go next: Point()
 	#returns where the robot should go and how it should orient itself
 	#returns the next point that robot will need to reorient at 
-
+	
 	x_diff = next_block_pos.x - curr_block_pos.x
 	y_diff = next_block_pos.y - curr_block_pos.y
-	angle_block_must_move_in = math.atan2(y_diff / x_diff)
+	angle_block_must_move_in = math.atan2(y_diff, x_diff)
 
 	target_pos = Point()
 	target_pos.x = curr_block_pos.x + (dist_rob_block * np.cos(np.pi+angle_block_must_move_in))
@@ -78,6 +78,7 @@ def path(message):
 	#request.ob_in = block_obstacle
 	block_resp = obstacle_creator(CreateObstacleRequest(block_obstacle))
 	block_obs = block_resp.ob_out
+	print("Finished creating obstacles")
 
 
 	# First, generate a path from the block to the target
@@ -87,23 +88,33 @@ def path(message):
 	rrt_block_path_find.obstacles = []
 	block_to_tgt_resp = rrt_runner(RunRRTRequest(rrt_block_path_find))
 	block_to_tgt_pnts = block_to_tgt_resp.path_to_follow.points #now we have block's path to the target
+	print("Found path from block to target")
+
+	block_to_tgt_pnts.insert(0, block_pos)
 
 	for i in range(len(block_to_tgt_pnts) - 1):
+		print("entered for loop")
 		#find target for robot's reorientation
 		robs_nxt_tgt, robs_nxt_endpnt = get_next_target(block_to_tgt_pnts[i], block_to_tgt_pnts[i + 1])
+		print("Found target for robot's reorientation: ")
+		print("Rob's next target is ", robs_nxt_tgt)
+		print("Rob's next endpoint is ", robs_nxt_endpnt)
 		# find path from robots current position to ^target
 		rrt_reorient_path_find = PointForRRT()
-		rrt_reorient_path_find.start = robs_pos
+		rrt_reorient_path_find.start = rob_pos
 		rrt_reorient_path_find.target = robs_nxt_tgt
 		block_obstacle.pose.position = block_to_tgt_pnts[i] #update this to check for blocks actual position
 		rrt_reorient_path_find.obstacles = [block_obs]
 
 		rob_reorient_resp = rrt_runner(RunRRTRequest(rrt_reorient_path_find))
+		print("Found path to bring Rob to first reorientation point!")
 		path_points = rob_reorient_resp.path_to_follow
 		path_points.points.append(robs_nxt_endpnt)
 
 		#move robot + block to the next point ! 
-		robs_pos = controller_runner(FollowPathRequest(path_points))
+		rob_pos_resp = controller_runner(FollowPathRequest(path_points))
+		print("Ran the controller, but you can see this part, so this print statement is useless, ya twat")
+		rob_pos = rob_pos_resp.rob_final_pos
 	
 	controller_runner.close()
 	rrt_runner.close()

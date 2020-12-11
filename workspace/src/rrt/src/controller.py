@@ -12,7 +12,7 @@ import sys
 import numpy as np
 from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion, Point, Vector3
 from rrt.msg import PointArray, Obstacle, PointForRRT
-from rrt.srv import CreateObstacle, FollowPath, RunRRT
+from rrt.srv import CreateObstacle, FollowPath, RunRRT, FollowPathResponse
 from tf.transformations import quaternion_matrix, euler_from_quaternion
 from math import atan2
 
@@ -64,7 +64,7 @@ def controller(message):
   fixed_frame = '/map' #TODO this is currently the marker.header.frame_id from assignment.py. 
 
   # poses = [Pose(Point(-3, 1.5, 0), Quaternion(x=0, y=0, z=1, w=np.pi))] #message.poses
-  target_points = message.points # [Point(-3, 1.5, 0)]
+  target_points = message.points.points # [Point(-3, 1.5, 0)]
   for i in range(len(target_points)):
     target_point = target_points[i]
     reachedOrientation = False
@@ -205,7 +205,7 @@ def controller(message):
   robot_final_position.y = trans[1]
   robot_final_position.z = trans[2]
 
-  return robot_final_position
+  return FollowPathResponse(robot_final_position)
 
 def pose_to_trans(p):
     q = p.pose.orientation

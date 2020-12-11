@@ -42,7 +42,7 @@ def callback(message):
 	#create an obstacle at position obstacle.pose, with dimensions obstacle.dim 
 	#if the obstacle is our moving object then make it a different colour 
 	#return an obstacle message with buffer values added to the dimensions 
-	obstacle = message.ob_out
+	obstacle = message.ob_in
 	if not obstacle.is_obj_to_move: 
 		#load_gazebo_models(blockPose=obstacle.pose)
 		obstacle.dim.x += k * radius_of_block
