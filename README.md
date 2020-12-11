@@ -8,8 +8,11 @@ Terminal 2: rosrun rviz rviz
 
 Terminal 3: 
 export ROBOT_INITIAL_POSE="-x -4 -y 4 -Y 0"
+
 export RVIZ_INITIAL_POS="-4 4 0"
+
 roslaunch starter turtlebot_world.launch world_file:=$(rospack find starter)/worlds/robsWorld.world
+
 
 Terminal 4: 
 rosrun rrt obstacle_creator.py
