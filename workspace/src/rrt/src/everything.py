@@ -95,6 +95,12 @@ def path(message):
 	for i in range(len(block_to_tgt_pnts) - 1):
 		print("entered for loop")
 		#find target for robot's reorientation
+		#current_block_pos = #get the current pos
+		# model_coordinates = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
+		# object_coordinates = model_coordinates("cyl_block", "/map")
+		# current_block_pos = object_coordinates.pose
+		# robs_nxt_tgt, robs_nxt_endpnt = get_next_target(current_block_pos, block_to_tgt_pnts[i])
+
 		robs_nxt_tgt, robs_nxt_endpnt = get_next_target(block_to_tgt_pnts[i], block_to_tgt_pnts[i + 1])
 		print("Found target for robot's reorientation: ")
 		print("Rob's next target is ", robs_nxt_tgt)

@@ -1,11 +1,11 @@
 file(REMOVE_RECURSE
   "CMakeFiles/rrt_generate_messages_nodejs"
-  "/home/sunaypoole/ros_workspaces/finalproj/workspace/devel/share/gennodejs/ros/rrt/msg/PointForRRT.js"
-  "/home/sunaypoole/ros_workspaces/finalproj/workspace/devel/share/gennodejs/ros/rrt/msg/PointArray.js"
-  "/home/sunaypoole/ros_workspaces/finalproj/workspace/devel/share/gennodejs/ros/rrt/msg/Obstacle.js"
-  "/home/sunaypoole/ros_workspaces/finalproj/workspace/devel/share/gennodejs/ros/rrt/srv/CreateObstacle.js"
-  "/home/sunaypoole/ros_workspaces/finalproj/workspace/devel/share/gennodejs/ros/rrt/srv/RunRRT.js"
-  "/home/sunaypoole/ros_workspaces/finalproj/workspace/devel/share/gennodejs/ros/rrt/srv/FollowPath.js"
+  "/home/srishtiagarwal/final_project/workspace/devel/share/gennodejs/ros/rrt/msg/Obstacle.js"
+  "/home/srishtiagarwal/final_project/workspace/devel/share/gennodejs/ros/rrt/msg/PointArray.js"
+  "/home/srishtiagarwal/final_project/workspace/devel/share/gennodejs/ros/rrt/msg/PointForRRT.js"
+  "/home/srishtiagarwal/final_project/workspace/devel/share/gennodejs/ros/rrt/srv/RunRRT.js"
+  "/home/srishtiagarwal/final_project/workspace/devel/share/gennodejs/ros/rrt/srv/FollowPath.js"
+  "/home/srishtiagarwal/final_project/workspace/devel/share/gennodejs/ros/rrt/srv/CreateObstacle.js"
 )
 
 # Per-language clean rules from dependency scanning.

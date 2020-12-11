@@ -1,4 +1,4 @@
-prefix=/home/sunaypoole/ros_workspaces/finalproj/workspace/install
+prefix=/home/srishtiagarwal/final_project/workspace/install
 
 Name: starter
 Description: Description of starter

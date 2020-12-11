@@ -3,7 +3,7 @@
 	<model name='cyl_ob_model'>
 		<link name='base_link'>
 
-			<pose frame=''>0 0 1 0 -0 0</pose>
+			<pose frame='block'>0 0 1 0 -0 0</pose>
 
 			<inertial>
 				<mass>0.01</mass>

@@ -2,7 +2,7 @@
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/sunaypoole/ros_workspaces/finalproj/workspace/install")
+  set(CMAKE_INSTALL_PREFIX "/home/srishtiagarwal/final_project/workspace/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -34,7 +34,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
-  include("/home/sunaypoole/ros_workspaces/finalproj/workspace/build/gtest/gtest/cmake_install.cmake")
+  include("/home/srishtiagarwal/final_project/workspace/build/gtest/gtest/cmake_install.cmake")
 
 endif()
 
