@@ -1,44 +1,46 @@
 # final_project
 
-## To run RRT: 
+## To run project: 
 
-Terminal 1: roscore 
+Terminal 1: roscore
 
 Terminal 2: rosrun rviz rviz 
 
-Terminal 3: rosrun rrt scripts/assignment.py 
-
-Terminal 4: rostopic echo path_points 
-
-Terminal 5: export RVIZ_INITIAL_POS="-4 4 0"
-
-export ROBOT_INITIAL_POSE="-x -4 -y 4 -Y 0"  
-(this makes the turtlebot start at that initial position, where -Y stands for yaw)
-
-In the SAME terminal, run:
+Terminal 3: 
+export ROBOT_INITIAL_POSE="-x -4 -y 4 -Y 0"
+export RVIZ_INITIAL_POS="-4 4 0"
 roslaunch starter turtlebot_world.launch world_file:=$(rospack find starter)/worlds/robsWorld.world
 
-Terminal 6: rosrun rrt scripts/controller.py 
+Terminal 4: 
+rosrun rrt obstacle_creator.py
 
-This will display the RRT as its running and the path_points topic which its publishing to. 
-The controller will subscribe to path_points and then run a turtlebot with the name "robot_0". We need to figure out how to spawn this turtlebot. I think the terminal 5 command should work? 
+Terminal 5: 
+rosrun rrt assignment.py
 
-Also in rviz make sure the global frame is "map", add a Marker with topic "visualization_marker", add a TF for "robot_0".
+Terminal 6: 
+rosrun rrt controller.py 
+
+Terminal 7: 
+rosrun rrt everything.py 
+
+Terminal 8: 
+rosrun starter initializer.py
+
+Input the following parameters—> 
+Robot starting x: -4 Robot starting y: 4 Block starting x: -3.5 Block starting y: 1.5 Target starting x: -2.5 Target starting y: -3.5
+
+Also in rviz make sure the global frame is "map", add a Marker with topic "visualization_marker", add TF, robotmodel.
 
 ## To pull from github and set up build and devel
 1. Delete the build and devel dirs inside workspace
 2. Delete the CMakeLists.txt file inside workspace/src
 3. Inside workspace/src run "catkin_init_workspace"
-4. Inside workspace directory run "catkin make"
+4. Inside workspace directory run "catkin_make"
 
 ## File structure and description: 
 
-scripts/assignment.py: this contains the code that we took from the other repo for basically running RRT in rviz. We need to hook this up to gazebo and figure out a way to make the turtlebot be the robot instead of the robot marker they've created. This publishes to a topic called "/path_points" --> returns a list of poses that the turtle bot must follow to get to the target state. 
+scripts/assignment.py: this contains the code that visualizes rrt running.
 
 scripts/controller.py: this is based on lab4 -- I've edited it to a large degree to subscribe to the path_points topic, take in the required points, and then try to navigate to them using some feedback control. THINGS TO DO: sync this with gazebo, FIND A WAY TO KEEP GETTING THE ROBOTS TRUE POSITION IN THE LOOP.  Also: i've created an "error_epsilon" variable which we need to tune so that the controller makes the robot go to each point in the path within some error range. 
 
-scripts/viz.py: this i think creates all the vizualisation stuff you see in rviz when you run the code. 
-
-scripts/tree.py: this creates the tree class which we're using to run the RRT stuff. 
-
-scripts/demo.py: this i think is irrelevant to us but im not deleting it yet. I'm going to clean up the code later will delete it then. 
+scripts/tree.py: this creates the tree class which we're using to run the rrt. 
