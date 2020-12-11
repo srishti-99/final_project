@@ -85,7 +85,7 @@
       		<wall_time>1599433007 209596235</wall_time>
       		<iterations>3739</iterations>
 
-      		<model name='cyl_ob_model'>
+    <!--  		<model name='cyl_ob_model'>
         		<pose frame=''>2.2157 -2.25896 2e-06 -2.5e-05 6.7e-05 -0.001036</pose>
         		<scale>1 1 1</scale>
         		<link name='link'>
@@ -105,7 +105,7 @@
           			<acceleration>0 0 -9.8 0 -0 0</acceleration>
           			<wrench>0 0 -9.8 0 -0 0</wrench>
         		</link>
-      		</model>
+      		</model> -->
 
       		<model name='ground_plane'>
         		<pose frame=''>0 0 0 0 -0 0</pose>
@@ -129,7 +129,7 @@
       		</camera>
     	</gui>
 
-    	<model name='cyl_ob_model'>
+  <!--  	<model name='cyl_ob_model'>
       		<link name='link'>
         		<pose frame=''>0.210027 -0.349984 0.499984 0 -0 0</pose>
         		<inertial>
@@ -319,6 +319,6 @@
     	<static>0</static>
     	<allow_auto_disable>1</allow_auto_disable>
     	<pose frame=''>-1.33 1.11 0 0 -0 0</pose>
-    </model>
+    </model> -->
   </world>
 </sdf>
