@@ -30,7 +30,18 @@ Terminal 8:
 rosrun starter initializer.py
 
 Input the following parameters—> 
-Robot starting x: -4 Robot starting y: 4 Block starting x: -3.5 Block starting y: 1.5 Target starting x: -2.5 Target starting y: -3.5
+
+Robot starting x: -4
+
+Robot starting y: 4
+
+Block starting x: -3.5
+
+Block starting y: 1.5
+
+Target starting x: -2.5
+
+Target starting y: -3.5
 
 Also in rviz make sure the global frame is "map", add a Marker with topic "visualization_marker", add TF, robotmodel.
 
