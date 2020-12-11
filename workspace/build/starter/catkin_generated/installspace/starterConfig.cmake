@@ -67,14 +67,14 @@ set(starter_CONFIG_INCLUDED TRUE)
 
 # set variables for source/devel/install prefixes
 if("FALSE" STREQUAL "TRUE")
-  set(starter_SOURCE_PREFIX /home/srishtiagarwal/final_project/workspace/src/starter)
-  set(starter_DEVEL_PREFIX /home/srishtiagarwal/final_project/workspace/devel)
+  set(starter_SOURCE_PREFIX /home/sunaypoole/ros_workspaces/finalproj/workspace/src/starter)
+  set(starter_DEVEL_PREFIX /home/sunaypoole/ros_workspaces/finalproj/workspace/devel)
   set(starter_INSTALL_PREFIX "")
   set(starter_PREFIX ${starter_DEVEL_PREFIX})
 else()
   set(starter_SOURCE_PREFIX "")
   set(starter_DEVEL_PREFIX "")
-  set(starter_INSTALL_PREFIX /home/srishtiagarwal/final_project/workspace/install)
+  set(starter_INSTALL_PREFIX /home/sunaypoole/ros_workspaces/finalproj/workspace/install)
   set(starter_PREFIX ${starter_INSTALL_PREFIX})
 endif()
 
@@ -154,7 +154,7 @@ foreach(library ${libraries})
     set(lib_path "")
     set(lib "${library}-NOTFOUND")
     # since the path where the library is found is returned we have to iterate over the paths manually
-    foreach(path /home/srishtiagarwal/final_project/workspace/install/lib;/home/srishtiagarwal/rethink_ws/devel/lib;/opt/ros/kinetic/lib)
+    foreach(path /home/sunaypoole/ros_workspaces/finalproj/workspace/install/lib;/home/sunaypoole/ros_workspaces/finalproj/workspace/devel/lib;/opt/ros/kinetic/lib)
       find_library(lib ${library}
         PATHS ${path}
         NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)

@@ -58,6 +58,11 @@ def load_gazebo_models(blockPose=Pose(position=Point(x=-3.5, y=1.5, z=0)),
 	with open (model_path + "cyl_ob/model.sdf", "r") as block_file:
 		block_xml=block_file.read().replace('\n', '')
 
+	boxPose = Pose(position=Point(x=-4, y=4, z=0))
+	box_xml = ''
+	with open (model_path + "inverted_box/model.sdf", "r") as box_file:
+		box_xml=box_file.read().replace('\n', '')
+
 	# Load Target SDF
 	#target_xml = ''
 	#with open (model_path + "target/model.sdf", "r") as target_file:
@@ -81,6 +86,15 @@ def load_gazebo_models(blockPose=Pose(position=Point(x=-3.5, y=1.5, z=0)),
 
 	#except rospy.ServiceException, e:
 	#	rospy.logerr("Spawn SDF Service call failed: {0}".format(e))
+
+	# Spawn Box SDF
+	rospy.wait_for_service('/gazebo/spawn_sdf_model')
+	try:
+		spawn_box_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
+		box_resp_sdf = spawn_box_sdf("inv_box", box_xml, "/", boxPose, blockRefFrame)
+	except rospy.ServiceException, e:
+		rospy.logerr("Spawn SDF service call failed: {0}".format(e))
+
 
 #Define the method which contains the main functionality of the node.
 def initializer():

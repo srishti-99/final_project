@@ -13,7 +13,7 @@ radius_of_block = 0.177 #set based on model file
 radius_of_robot = 0.1 #set based on model file
 
 #distance of robots origin from blocks origin once it reorients 
-dist_rob_block = radius_of_block + radius_of_robot + 0.1 # 0.1 margin of error
+dist_rob_block = radius_of_block + radius_of_robot + 0.03 # 0.03 margin of error
 
 #For each node of that path:
 

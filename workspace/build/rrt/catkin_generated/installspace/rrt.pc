@@ -1,4 +1,4 @@
-prefix=/home/srishtiagarwal/final_project/workspace/install
+prefix=/home/sunaypoole/ros_workspaces/finalproj/workspace/install
 
 Name: rrt
 Description: Description of rrt

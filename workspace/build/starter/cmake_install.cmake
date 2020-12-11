@@ -1,8 +1,8 @@
-# Install script for directory: /home/srishtiagarwal/final_project/workspace/src/starter
+# Install script for directory: /home/sunaypoole/ros_workspaces/finalproj/workspace/src/starter
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/srishtiagarwal/final_project/workspace/install")
+  set(CMAKE_INSTALL_PREFIX "/home/sunaypoole/ros_workspaces/finalproj/workspace/install")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 
@@ -33,17 +33,17 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/srishtiagarwal/final_project/workspace/build/starter/catkin_generated/installspace/starter.pc")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/catkin_generated/installspace/starter.pc")
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/starter/cmake" TYPE FILE FILES
-    "/home/srishtiagarwal/final_project/workspace/build/starter/catkin_generated/installspace/starterConfig.cmake"
-    "/home/srishtiagarwal/final_project/workspace/build/starter/catkin_generated/installspace/starterConfig-version.cmake"
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/catkin_generated/installspace/starterConfig.cmake"
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/build/starter/catkin_generated/installspace/starterConfig-version.cmake"
     )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/starter" TYPE FILE FILES "/home/srishtiagarwal/final_project/workspace/src/starter/package.xml")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/starter" TYPE FILE FILES "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/starter/package.xml")
 endif()
 

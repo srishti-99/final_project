@@ -226,13 +226,13 @@ def choose_next_point(target):
 	next_point = Point()
 	target_x = target.x
 	target_y = target.y
-	next_point.x = random.gauss(target_x, target_x/2)
+	next_point.x = random.gauss(target_x, target_x/4)
 	while not (next_point.x < BOARD_CORNERS[1] and next_point.x > BOARD_CORNERS[0]):
-		next_point.x = random.gauss(target_x, target_x/2)
+		next_point.x = random.gauss(target_x, target_x/4)
 
-	next_point.y = random.gauss(target_y, target_y/2)
+	next_point.y = random.gauss(target_y, target_y/4)
 	while not (next_point.y < BOARD_CORNERS[2] and next_point.y > BOARD_CORNERS[3]):
-		next_point.y = random.gauss(target_y, target_y/2)
+		next_point.y = random.gauss(target_y, target_y/4)
 
 	next_point.z = 0
 	return next_point
