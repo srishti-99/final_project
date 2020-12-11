@@ -48,16 +48,21 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    PointArray.msg
+   Obstacle.msg
+   PointForRRT.msg
 #   Message1.msg
 #   Message2.msg
  )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
+add_service_files(
+   FILES
+   RunRRT.srv
+   FollowPath.srv
+   CreateObstacle.srv
 #   Service1.srv
 #   Service2.srv
-# )
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(

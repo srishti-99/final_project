@@ -33,7 +33,19 @@ if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rrt/msg" TYPE FILE FILES "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/PointArray.msg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rrt/msg" TYPE FILE FILES
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/PointArray.msg"
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/Obstacle.msg"
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/PointForRRT.msg"
+    )
+endif()
+
+if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/rrt/srv" TYPE FILE FILES
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/srv/RunRRT.srv"
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/srv/FollowPath.srv"
+    "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/srv/CreateObstacle.srv"
+    )
 endif()
 
 if(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")

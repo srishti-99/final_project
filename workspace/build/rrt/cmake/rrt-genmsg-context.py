@@ -1,7 +1,7 @@
 # generated from genmsg/cmake/pkg-genmsg.context.in
 
-messages_str = "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/PointArray.msg"
-services_str = ""
+messages_str = "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/PointArray.msg;/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/Obstacle.msg;/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/msg/PointForRRT.msg"
+services_str = "/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/srv/RunRRT.srv;/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/srv/FollowPath.srv;/home/sunaypoole/ros_workspaces/finalproj/workspace/src/rrt/srv/CreateObstacle.srv"
 pkg_name = "rrt"
 dependencies_str = "std_msgs;geometry_msgs"
 langs = "gencpp;geneus;genlisp;gennodejs;genpy"

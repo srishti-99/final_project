@@ -11,7 +11,8 @@ import random
 import rospy
 import numpy as np 
 
-from rrt.msg import PointArray, PointForRRT
+from rrt.msg import PointArray, Obstacle, PointForRRT
+from rrt.srv import CreateObstacle, FollowPath, RunRRT
 
 HZ = 5
 STEP = 1.0
@@ -451,7 +452,7 @@ def run_ros(message):
 
 def listener():
 	#rospy.Subscriber("rrt_start_target", PointForRRT, run_ros)
-	s = rospy.Service("run_rrt", PointForRRT, run_ros)
+	s = rospy.Service("run_rrt", RunRRT, run_ros)
 	rospy.spin()
 
 

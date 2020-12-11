@@ -94,31 +94,31 @@ def initializer():
 	#and the /target_init topics
 	blockInitPub = rospy.Publisher('block_init', Point, queue_size=10)
 	targetInitPub = rospy.Publisher('target_init', Point, queue_size=10)
-	AllInitPub = rospy.Publisher('rob_block_target', PointArray, queue_size=10)
+	allInitPub = rospy.Publisher('rob_block_target', PointArray, queue_size=10)
 
 	#raw_input takes in a user prompt to initialize positions
 	#for the robot, block, and target, then publish to corresponding topics
 	robPosInit = Point()
-	robPosInit.x = raw_input("Robot starting x: ")
-	robPosInit.y = raw_input("Robot starting y: ")
+	robPosInit.x = float(raw_input("Robot starting x: "))
+	robPosInit.y = float(raw_input("Robot starting y: "))
 	robPosInit.z = 0
 	robInitPub.publish(robPosInit)
 	
 	blockPosInit = Point()
-	blockPosInit.x = raw_input("Block starting x: ")
-	blockPosInit.y = raw_input("Block starting y: ")
+	blockPosInit.x = float(raw_input("Block starting x: "))
+	blockPosInit.y = float(raw_input("Block starting y: "))
 	blockPosInit.z = 0
 	blockInitPub.publish(blockPosInit)
 
 	targetPosInit = Point()
-	targetPosInit.x = raw_input("Target starting x: ")
-	targetPosInit.y = raw_input("Target starting y: ")
+	targetPosInit.x = float(raw_input("Target starting x: "))
+	targetPosInit.y = float(raw_input("Target starting y: "))
 	targetPosInit.z = 0
 	targetInitPub.publish(targetPosInit)
 
-	AllInit = PointArray()
-	AllInit.points = [robPosInit, blockPosInit, targetPosInit]
-	AllInitPub.publish(AllInit)
+	allInit = PointArray()
+	allInit.points = [robPosInit, blockPosInit, targetPosInit]
+	allInitPub.publish(allInit)
 
 	#Load target and block gazebo modelstargetPosInit
 	load_gazebo_models()

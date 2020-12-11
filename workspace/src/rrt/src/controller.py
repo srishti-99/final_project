@@ -11,7 +11,8 @@ import tf
 import sys
 import numpy as np
 from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion, Point, Vector3
-from rrt.msg import PointArray
+from rrt.msg import PointArray, Obstacle, PointForRRT
+from rrt.srv import CreateObstacle, FollowPath, RunRRT
 from tf.transformations import quaternion_matrix, euler_from_quaternion
 from math import atan2
 
@@ -222,7 +223,7 @@ def listener():
     #use to receive messages of type std_msgs/String from the topic /chatter_talk.
     #Whenever a new message is received, the method callback() will be called
     #with the received message as its first argument.
-    s = rospy.Service("follow_path", PointArray, controller)
+    s = rospy.Service("follow_path", FollowPath, controller)
     rospy.spin()
 
       
