@@ -18,15 +18,15 @@ from tf.transformations import quaternion_matrix, euler_from_quaternion
 from math import atan2
 from everything import get_next_target
 
-radius = 0.1 + 0.177 + 0.1
+radius = 0.1 + 0.177 + 0.05
 
 K1 = 1
 K2 = 1
 
 # radius = #radius around the block's position which is acceptable
 
-pos_epsilon_error = 0.05 #set error value
-orientation_epsilon_error = 0.01
+pos_epsilon_error = 0.02 #set error value
+orientation_epsilon_error = 0.02
 x_diff_error = 0.05
 y_diff_error = 0.05
 
@@ -39,6 +39,17 @@ zero_cmd.linear.z = 0
 zero_cmd.angular.x = 0
 zero_cmd.angular.y = 0
 zero_cmd.angular.z = 0
+
+small_cmd = Twist()
+small_cmd.linear = Vector3()
+small_cmd.angular = Vector3()
+
+small_cmd.linear.x = 0.02 
+small_cmd.linear.y = 0.0
+small_cmd.linear.z = 0.0
+small_cmd.angular.x = 0.0
+small_cmd.angular.y = 0.0
+small_cmd.angular.z = 0.0
 
 robot_frame = '/base_link' #TODO this needs to be a TF frame. I can't figure out how to create a TF frame and attach it to the gazebo turtlebot
 fixed_frame = '/map' #TODO this is currently the marker.header.frame_id from assignment.py.
@@ -66,15 +77,6 @@ def get_current_block_pos():
 
 # return the current robot POSITION, and quaternion
 def get_current_rob_pos():
-  # tfListener = tf.TransformListener()
-  # tfListener.waitForTransform(fixed_frame, robot_frame, rospy.Time(), rospy.Duration(4.0))
-  # trans, rot = tfListener.lookupTransform(fixed_frame, robot_frame, rospy.Time()) 
-
-  # current_rob_pos = Point()
-  # current_rob_pos.x = trans[0]
-  # current_rob_pos.y = trans[1]
-  # current_rob_pos.z = trans[2]
-
   rospy.wait_for_service('/gazebo/get_model_state')
   get_rob_coordinates = rospy.ServiceProxy('/gazebo/get_model_state', GetModelState)
   current_rob_info = get_rob_coordinates("mobile_base", "/map")
@@ -111,41 +113,30 @@ def controller(message):
   # poses = [Pose(Point(-3, 1.5, 0), Quaternion(x=0, y=0, z=1, w=np.pi))] #message.poses
   should_be_in_contact = False
   target_points = message.points.points # [Point(-3, 1.5, 0)]
-  for i in range(len(target_points)):
+  i = 0
+  for target_point in target_points:
     print("ENTERING ITERATION ", i)
-    target_point = target_points[i]
+    # target_point = target_points[i]
     #reachedOrientation = False
     reachedPosition = False
     old_target_point = None
-    if i == len(target_points) - 1: #if we're on the last point
+    if target_point == target_points[-1]: #if we're on the last point
       should_be_in_contact = True
+    i+= 1
 
     while not reachedPosition:
 
       reachedPosition = reach_orientation(target_point)
       if reachedPosition:
-        # if old_target_point != None:
-        #   print("Are you entering here?")
-        #   target_point = old_target_point
-        #   old_target_point = None
-        #   reachedPosition = False
-        #   should_be_in_contact = True
-        continue
-        #else:
-        #  break
+        break
 
       if not should_be_in_contact:
         # run normal algorithm
         reachedPosition = run_position(target_point)
         if reachedPosition:
-          # if old_target_point != None:
-          #   target_point = old_target_point
-          #   old_target_point = None
-          #   reachedPosition = False
-          #   should_be_in_contact = True
-          continue
-          #else:
-          #  break
+          break
+      
+
       else: # push block
         while in_contact_with_block():
           print("IN CONTACT WITH BLOCK")
@@ -156,9 +147,9 @@ def controller(message):
 
         # now go behind block
         if not in_contact_with_block():
-          print("Reached here")
+          print("Lost contact with block")
           #old_target_point = target_point
-          tp, kya = get_next_target(get_current_block_pos(), target_points[i]) # get point right behind block
+          tp, kya = get_next_target(get_current_block_pos(), target_points[-1]) # get point right behind block
           
           # call RRT service to get path to target point
           rospy.wait_for_service("run_rrt")
@@ -187,9 +178,10 @@ def controller(message):
           # call controller_simple to move along that path
           controller_simple(rob_to_tgt_pnts)
 
-          # continue from before
-          should_be_in_contact = False
-
+          pub.publish(small_cmd)
+          r.sleep()
+          pub.publish(zero_cmd)
+          r.sleep()
 
 
       # if reach_orientation(target_point): # succeeds if it happened to reach position in the process of reaching orientation
@@ -309,31 +301,12 @@ def controller_simple(list_of_points):
   #tfBuffer = tf.Buffer()
   tfListener = tf.TransformListener()
 
-  
   # Create a timer object that will sleep long enough to result in
   # a 10Hz publishing rate
   freq = 2
   r = rospy.Rate(freq) # freq hz
   freq2 = 10
   r2 = rospy.Rate(freq2)
-
-  K1 = 1
-  K2 = 1
-
-  pos_epsilon_error = 0.5 #set error value
-  orientation_epsilon_error = 0.01
-  x_diff_error = 0.05
-  y_diff_error = 0.05
-
-  zero_cmd = Twist()
-  zero_cmd.linear = Vector3()
-  zero_cmd.angular = Vector3()
-  zero_cmd.linear.x = 0
-  zero_cmd.linear.y = 0
-  zero_cmd.linear.z = 0
-  zero_cmd.angular.x = 0
-  zero_cmd.angular.y = 0
-  zero_cmd.angular.z = 0
 
   robot_frame = '/base_link' #TODO this needs to be a TF frame. I can't figure out how to create a TF frame and attach it to the gazebo turtlebot
   fixed_frame = '/map' #TODO this is currently the marker.header.frame_id from assignment.py. 
@@ -351,20 +324,24 @@ def controller_simple(list_of_points):
       while not reachedOrientation:
         print("Orientation iteration ", blah)
         blah += 1
+        if blah >= 20: 
+          return
     
-        tfListener.waitForTransform(fixed_frame, robot_frame, rospy.Time(), rospy.Duration(4.0))
-        trans, rot = tfListener.lookupTransform(fixed_frame, robot_frame, rospy.Time()) 
+        # tfListener.waitForTransform(fixed_frame, robot_frame, rospy.Time(), rospy.Duration(4.0))
+        # trans, rot = tfListener.lookupTransform(fixed_frame, robot_frame, rospy.Time()) 
         
-        #current_pose = Pose()
-        current_point = Point()
-        current_point.x = trans[0]
-        current_point.y = trans[1]
-        current_point.z = trans[2]
-        print(rot)
-        print(type(rot))
+        # #current_pose = Pose()
+        # current_point = Point()
+        # current_point.x = trans[0]
+        # current_point.y = trans[1]
+        # current_point.z = trans[2]
+        # print(rot)
+        # print(type(rot))
         #current_pose.position = current_point
         #current_quaternion = Quaternion()
-        current_quaternion = rot
+
+        current_point, current_quaternion = get_current_rob_pos()
+        rot = [current_quaternion.x, current_quaternion.y, current_quaternion.z, current_quaternion.w]
         #current_quaternion.x, current_quaternion.y, current_quaternion.z, current_quaternion.w = rot[0], rot[1], rot[2], rot[3]
         current_euler = euler_from_quaternion(rot)
 
@@ -411,12 +388,6 @@ def controller_simple(list_of_points):
 
         pub.publish(cmd)
         r.sleep()
-        #pub.publish(cmd)
-        #r.sleep()
-        #pub.publish(cmd)
-        #r.sleep()
-
-        # now, move straight with 0 orientation (no angular velocity)
 
       if reachedPosition:
         break
@@ -427,14 +398,10 @@ def controller_simple(list_of_points):
         print("Iteration ", kj)
         kj += 1
 
-        tfListener.waitForTransform(robot_frame, fixed_frame, rospy.Time(), rospy.Duration(4.0))
-        trans, rot = tfListener.lookupTransform(robot_frame, fixed_frame, rospy.Time()) 
-        
-        #current_pose = Pose()
-        current_point = Point()
-        current_point.x = trans[0]
-        current_point.y = trans[1]
-        current_point.z = trans[2]
+        current_point, current_quaternion = get_current_rob_pos()
+        rot = [current_quaternion.x, current_quaternion.y, current_quaternion.z, current_quaternion.w]
+        #current_quaternion.x, current_quaternion.y, current_quaternion.z, current_quaternion.w = rot[0], rot[1], rot[2], rot[3]
+        current_euler = euler_from_quaternion(rot)
 
         # given a point to move to, first orient in the direction of travel (no linear velocity)
         x_diff = target_point.x - current_point.x

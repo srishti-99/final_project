@@ -11,7 +11,7 @@ import math
 
 radius_of_robot = 0.177 #set based on model file
 radius_of_block = 0.1 #set based on model file
-k = 1 #2 
+k = 0.5 #2 
 
 def load_gazebo_models(blockPose=Pose(position=Point(x=-3.5, y=1.5, z=0)),
 						blockRefFrame="map",):
@@ -33,7 +33,7 @@ def load_gazebo_models(blockPose=Pose(position=Point(x=-3.5, y=1.5, z=0)),
 	rospy.wait_for_service('/gazebo/spawn_sdf_model')
 	try:
 		spawn_block_sdf = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-		block_resp_sdf = spawn_block_sdf("cyl_block", block_xml, "/",
+		block_resp_sdf = spawn_block_sdf("obstacles", block_xml, "/",
 							blockPose, blockRefFrame)
 	except rospy.ServiceException, e:
 		rospy.logerr("Spawn SDF service call failed: {0}".format(e))
@@ -45,11 +45,11 @@ def callback(message):
 	obstacle = message.ob_in
 	if not obstacle.is_obj_to_move: 
 		#load_gazebo_models(blockPose=obstacle.pose)
-		obstacle.dim.x += k * radius_of_block
-		obstacle.dim.y += k * radius_of_block
+		obstacle.dim.x += k * radius_of_block +  k * radius_of_robot
+		obstacle.dim.y += k * radius_of_block +  k * radius_of_robot
 
-	obstacle.dim.x += k * radius_of_robot
-	obstacle.dim.y += k * radius_of_robot
+	obstacle.dim.x 
+	obstacle.dim.y 
 
 	return CreateObstacleResponse(obstacle)
 

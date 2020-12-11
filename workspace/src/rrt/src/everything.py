@@ -13,7 +13,7 @@ radius_of_block = 0.177 #set based on model file
 radius_of_robot = 0.1 #set based on model file
 
 #distance of robots origin from blocks origin once it reorients 
-dist_rob_block = radius_of_block + radius_of_robot + 0.03 # 0.03 margin of error
+dist_rob_block = radius_of_block + radius_of_robot # 0.03 margin of error
 
 #For each node of that path:
 
@@ -51,6 +51,19 @@ def get_next_target(curr_block_pos, next_block_pos):
 	next_endpnt.z = 0
 
 	return target_pos, next_endpnt
+
+
+def make_obstacles(num=5):
+	#incomplete. 
+	for i in range(num):
+		obs = Obstacle()
+		obs.is_obj_to_move = 0
+		obs.pose = Pose()
+		obs.pose.orientation = Quaternion(0,0,0,1)
+		obs.dim.x = 0.4
+		obs.dim.y = 0.4
+		obs.dim.z = 0.4
+		obs_list.append(obs)
 
 def path(message): 
 	rob_pos = message.points[0]
