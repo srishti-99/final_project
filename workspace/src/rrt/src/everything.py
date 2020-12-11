@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion, Point, Vector3
 from rrt.msg import PointArray, Obstacle, PointForRRT
-from rrt.srv import CreateObstacle, FollowPath, RunRRT
+from rrt.srv import CreateObstacle, CreateObstacleRequest, FollowPath, FollowPathRequest, RunRRT, RunRRTRequest
 from tf.transformations import quaternion_matrix, euler_from_quaternion
 import math
 
@@ -56,8 +56,15 @@ def path(message):
 	rob_pos = message.points[0]
 	block_pos = message.points[1]
 	target_pos = message.points[2]
+
+	rospy.wait_for_service("run_rrt")
+	rrt_runner = rospy.ServiceProxy("run_rrt", RunRRT, persistent=True)
 	
-	
+	rospy.wait_for_service("create_obstacle")
+	obstacle_creator = rospy.ServiceProxy("create_obstacle", CreateObstacle, persistent=True)
+
+	rospy.wait_for_service("follow_path")
+	controller_runner = rospy.ServiceProxy("follow_path", FollowPath, persistent=True)
 	# request = CreateObstacleRequest()
 	#block object Obstacle msg with buffer 
 	block_obstacle = Obstacle()
@@ -69,29 +76,17 @@ def path(message):
 	block_obstacle.dim.y = 2*radius_of_block
 	block_obstacle.dim.z = 2*radius_of_block
 	#request.ob_in = block_obstacle
-	rospy.wait_for_service("create_obstacle")
-	try:
-		obstacle_creator = rospy.ServiceProxy("create_obstacle", CreateObstacle)
-		block_obs = obstacle_creator(block_obstacle)
-	except rospy.ServiceException, e:
-		rospy.logerr("Spawn SDF service call failed: {0}".format(e))
+	block_resp = obstacle_creator(CreateObstacleRequest(block_obstacle))
+	block_obs = block_resp.ob_out
+
 
 	# First, generate a path from the block to the target
 	rrt_block_path_find = PointForRRT()
 	rrt_block_path_find.start = block_pos 
 	rrt_block_path_find.target = target_pos
 	rrt_block_path_find.obstacles = []
-
-	
-	rospy.wait_for_service("run_rrt")
-	try:
-		rrt_runner = rospy.ServiceProxy("run_rrt", RunRRT)
-		block_to_tgt_resp = rrt_runner(rrt_block_path_find)
-
-	except rospy.ServiceException, e:
-		rospy.logerr("Spawn SDF service call failed: {0}".format(e))
-
-	block_to_tgt_pnts = block_to_tgt_resp.points #now we have block's path to the target
+	block_to_tgt_resp = rrt_runner(RunRRTRequest(rrt_block_path_find))
+	block_to_tgt_pnts = block_to_tgt_resp.path_to_follow.points #now we have block's path to the target
 
 	for i in range(len(block_to_tgt_pnts) - 1):
 		#find target for robot's reorientation
@@ -103,23 +98,16 @@ def path(message):
 		block_obstacle.pose.position = block_to_tgt_pnts[i] #update this to check for blocks actual position
 		rrt_reorient_path_find.obstacles = [block_obs]
 
-		rospy.wait_for_service("run_rrt")
-		try:
-			rrt_runner = rospy.ServiceProxy("run_rrt", RunRRT)
-			rob_reorient_resp = rrt_runner(rrt_reorient_path_find)
-		except rospy.ServiceException, e:
-			rospy.logerr("Spawn SDF service call failed: {0}".format(e))
-
-		rob_reorient_resp.points.append(robs_nxt_endpnt)
+		rob_reorient_resp = rrt_runner(RunRRTRequest(rrt_reorient_path_find))
+		path_points = rob_reorient_resp.path_to_follow
+		path_points.points.append(robs_nxt_endpnt)
 
 		#move robot + block to the next point ! 
-		rospy.wait_for_service("follow_path")
-		try:
-			controller_runner = rospy.ServiceProxy("follow_path", FollowPath)
-			robs_pos = controller_runner(rob_reorient_resp)
-		except rospy.ServiceException, e:
-			rospy.logerr("Spawn SDF service call failed: {0}".format(e))
-
+		robs_pos = controller_runner(FollowPathRequest(path_points))
+	
+	controller_runner.close()
+	rrt_runner.close()
+	obstacle_creator.close()
 
 def listener_init():
 	#Getting initial positions of robot, block and target

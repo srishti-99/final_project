@@ -5,7 +5,7 @@ import sys
 import numpy as np
 from geometry_msgs.msg import Twist, PoseArray, Pose, Quaternion, Point, Vector3
 from rrt.msg import PointArray, Obstacle, PointForRRT
-from rrt.srv import CreateObstacle, FollowPath, RunRRT
+from rrt.srv import CreateObstacle, FollowPath, RunRRT, CreateObstacleResponse
 from tf.transformations import quaternion_matrix, euler_from_quaternion
 import math
 
@@ -51,7 +51,7 @@ def callback(message):
 	obstacle.dim.x += k * radius_of_robot
 	obstacle.dim.y += k * radius_of_robot
 
-	return obstacle
+	return CreateObstacleResponse(obstacle)
 
 def listener():
 	s = rospy.Service("create_obstacle", CreateObstacle, callback)
