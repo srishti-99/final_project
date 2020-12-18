@@ -53,8 +53,8 @@ Also in rviz make sure the global frame is "map", add a Marker with topic "visua
 
 ## File structure and description: 
 
-scripts/assignment.py: this contains the code that visualizes rrt running.
+scripts/assignment.py: this contains the code that visualizes rrt running. Source code: 
 
-scripts/controller.py: this is based on lab4 -- I've edited it to a large degree to subscribe to the path_points topic, take in the required points, and then try to navigate to them using some feedback control. THINGS TO DO: sync this with gazebo, FIND A WAY TO KEEP GETTING THE ROBOTS TRUE POSITION IN THE LOOP.  Also: i've created an "error_epsilon" variable which we need to tune so that the controller makes the robot go to each point in the path within some error range. 
+scripts/controller.py: this runs a controller based off of lab4's unicycle controller. 
 
 scripts/tree.py: this creates the tree class which we're using to run the rrt. 
