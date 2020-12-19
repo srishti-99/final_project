@@ -71,7 +71,9 @@ class PathPlanner:
         """
 
         L = 20.0  # Length between midpoints of front and rear axle of the car like robot
-        delta_speed, delta_angle = np.arange(0.1, 1.0), [-math.pi/2, -math.pi/4, 0, math.pi/4, math.pi/2]
+        # delta_speed, delta_angle = np.arange(0.1, 1.0), [-math.pi/2, -math.pi/4, 0, math.pi/4, math.pi/2] # Uncomment for predefined set
+        # delta_speed = np.random.rand(3, size=10) #Uncomment for random sampling
+        delta_angle = np.random.rand(3, size=10) #Uncomment for random sampling
         controls = list(itertools.product(delta_speed, delta_angle)) # Cartesian product of speeds and angles
         result = []
         control_paths = {c: [] for c in controls}
